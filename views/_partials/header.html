@@ -1,0 +1,127 @@
+<nav class="navbar navbar-default">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">
+        <img width="90px" src="/public/img/logo1.png" alt="">
+      </a>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <!-- <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+          <li><a href="#">Link</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Action</a></li>
+              <li><a href="#">Another action</a></li>
+              <li><a href="#">Something else here</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">Separated link</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">One more separated link</a></li>
+            </ul>
+          </li>
+        </ul> -->
+
+        {{if (flag&&labuser||user&&flag)}}
+      <form  class="navbar-form navbar-left" @submit.prevent = "searching">
+        <div class="form-group">
+          <input type="text" class="form-control" id="search" name="search" @input="searching" v-model:placeholder="search">
+        </div>
+        <input type="button" value="查找" @click="searching" class="btn btn-primary">
+      </form>
+      {{else if (!flag&&labuser||!flag&&user)}}
+      <form  class="navbar-form navbar-left" @submit.prevent = "searching">
+          <div class="form-group">
+            <input type="text" class="form-control" id="search" name="search" @input="searching" v-model:placeholder="search">
+          </div>
+          <input type="button" value="查找" @click="searching" class="btn btn-primary">
+        </form>
+      {{/if}}
+
+   <!--   <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">sou</h3>
+        </div>
+        <div class="panel-body form-inline">
+  
+          <label>
+            Name:
+            <input type="text" v-model="name" class="form-control">
+          </label>
+  
+          <input type="button" value="添加" @click="add" class="btn btn-primary">
+        </div>
+      </div>-->
+  
+      <ul class="nav navbar-nav navbar-right">
+        {{ if user }}
+        <a class="btn btn-default btn-info navbar-btn" href="/">可借列表</a>
+        <a class="btn btn-default btn-primary navbar-btn" href="/borrow_history">借用历史</a>
+        <a class="btn btn-default btn-primary navbar-btn" href="/revert_history">归还历史</a>
+        <a class="btn btn-default btn-warning navbar-btn" href="/my_borrw">我的借用</a>
+       <!-- <a class="btn btn-default navbar-btn" href="/topics/new">发起</a>-->
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img width="20" height="20" src="/public/img/avatar-default.png" alt=""> <span class="caret"></span></a>
+          
+          <ul class="dropdown-menu">
+            <li class="dropdown-current-user">
+              当前登录用户:
+            </li>
+            <li class="dropdown-current-user">
+              &nbsp {{user.nickname }}
+            </li>
+            <li class="dropdown-current-user">
+              实验室:
+            </li>
+            <li class="dropdown-current-user">
+              &nbsp {{user.labnickname }}
+            </li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">个人主页</a></li>
+            <li><a href="/settings/profile">设置</a></li>
+            <li><a href="/logout">退出</a></li>
+          </ul>
+        </li>
+        {{ else if labuser }}
+        <a class="btn btn-default btn-info navbar-btn" href="/">可借列表</a>
+        <a class="btn btn-default btn-primary navbar-btn" href="/borrow_history">借用历史</a>
+        <a class="btn btn-default btn-primary navbar-btn" href="/revert_history">归还历史</a>
+        <a class="btn btn-default btn-danger navbar-btn" href="/my_borrw">未还历史</a>
+        <a class="btn btn-default btn-warning navbar-btn" href="/add">登记新器件</a>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img width="20" height="20" src="/public/img/avatar-default.png" alt=""> <span class="caret"></span></a>
+
+          <ul class="dropdown-menu">
+            <li class="dropdown-current-user">
+              当前登录用户: 
+            </li>
+            <li class="dropdown-current-user">
+              {{ labuser.nickname }}
+            </li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">个人主页</a></li>
+            <li><a href="/settings/profile">设置</a></li>
+            <li><a href="/logout">退出</a></li>
+          </ul>
+        </li>
+        {{ else }}
+        <a class="btn btn-primary navbar-btn" href="/login">个人登录</a>
+        <a class="btn btn-primary navbar-btn" href="/lablogin">实验室登录</a>
+        <a class="btn btn-success navbar-btn" href="/register">个人注册</a>
+        <a class="btn btn-success navbar-btn" href="/labregister">实验室注册</a>
+        {{ /if }}
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+  </div>
+  <!-- /.container-fluid -->
+</nav>

@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>AR_index</title>
+    <!--<link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/public/css/login.css">-->
+    <script src="../public/lib/vue.js"></script>
+    <script src="../public/lib/vue-resource-1.3.4.js"></script>
+    <script src="/node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>  
+    <script src="../public/lib/vue-router-3.0.1.js"></script>
+    <!--<link href="../public/css/danghanglan.css" rel="stylesheet" type="text/css" /> 
+    <link rel="stylesheet" href="../public/css/AR_index.css">-->
+    <script type="text/javascript" src="../public/dist/bundle.js"></script>
+</head>
+<body>
+    <!--//////////////////////////////////////渲染部分//////////////////////////////////////////-->
+    <div id=app class="app">
+        <router-view name="top_bar" @func="show_main_area"></router-view>
+        <router-view name="user_login" @func="user_login"></router-view>
+        <router-view name="carousel_title_change"  @func="carrousel_title_change"></router-view>
+        <router-view name="top_carrousel_adm" v-bind:parent_top_carrousel_adm="top_carrousel_adm" v-bind:parent_top_carrousel_list="top_carrousel_list" @func="top_carousels_add" @func1="top_carousels_del"></router-view>
+        <router-view name="left_carrousel_adm" v-bind:parent_left_carrousel_adm="left_carrousel_adm" v-bind:parent_left_carrousel_list="left_carrousel_list" @func="left_carousels_add" @func1="left_carousels_del" @func2="left_carousels_change"></router-view>
+        <router-view name="index_news_add" @func="news_add" v-bind:parent_all_news="all_news"></router-view>
+        <router-view name="index_news_change" @func="news_change"></router-view>
+        <router-view name="administrator_login" @func="administrator_login"></router-view>
+        <router-view name="navigation_bar"></router-view>
+        <router-view name="carrousel_area" v-bind:parent_top_carrousel_list="top_carrousel_list" @func="top_carrousel_administration"></router-view>
+        <div class="main_area" ref="main_area">
+            <router-view name="left_carrousel_area" v-bind:parent_left_carrousel_list="left_carrousel_list" @func="left_carrousel_administration"></router-view>
+            <div class="main_area_1" ref="main_area_1">
+                <router-view name="news_show" v-bind:parent_news="news_html"></router-view>
+                <router-view name="news_center" v-bind:parent_news_list="news_list" v-bind:parent_i_flag="i_flag" @func3="next_page" @func4="last_page" @func5="initial_page" @func6="final_page" @func7="go_to_news"></router-view>
+                <router-view name="news_area" @func="index_news_del" @func1="index_news_add" @func2="index_news_change" @func3="go_to_news" v-bind:parent_news_list="news_list"></router-view>
+                <router-view name="some_button"></router-view>
+            </div>
+        </div>
+        <router-view name="foot_area"></router-view>
+    </div>
+<!--/////////////////////////////////////////////模块//////////////////////////////////////////-->
+<template id="top_bar"><!--顶部logo、登录、注册-->
+    {{if !admuser&&!user}}
+    <div class="top_bar_1">
+        <a class="navbar-brand" href="#/">
+            <img width="75%" src="/public/img/logo.png" alt="">
+        </a>
+        <div class="top_bar_2">
+            <router-link  @click="show" class="top_bar_2_a" to="/administrator_login" >管理员登录</router-link>
+        </div>
+    </div>
+    {{else if admuser}}
+    <div class="top_bar_1">
+        <a class="navbar-brand" href="#/">
+            <img width="75%" src="/public/img/logo.png" alt="">
+        </a>
+        <div class="top_bar_2">
+            <div class="top_bar_2_a">
+                <div class="dropdown">
+                    您好，管理员 <a data-toggle="dropdown" href="#">{{admuser[0].user_name}}</a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <li><a href="/logout">退出</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{else if user}}
+    <div class="top_bar_1">
+        <a class="navbar-brand" href="#/">
+            <img width="75%" src="/public/img/logo.png" alt="">
+        </a>
+        <div class="top_bar_2">
+            <div class="top_bar_2_a">
+                <div class="dropdown">
+                    您好, <a data-toggle="dropdown" href="#">{{user[0].username}}</a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <li><a href="/logout">退出</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+</template>
+<template id="navigation_bar"><!--导航栏-->
+    {{if !user}}
+    <div class="navigation_bar">
+        <div class="header">
+            <div class="nav-bar">
+                <div class="nav-bg">
+                    <div class="nav-top">
+                        <div class="nav-content">
+                            <ul class="nav-content-box">
+                                <li class="mobile">
+                                    <span><a href="#">首页</a></span>
+                                    <ul>
+                                        <li><a href="#"></a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="#">产品展示</a></span>
+                                    <ul>
+                                        <li><a href="#">品牌推广</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile ">
+                                    <span><a href="javascript:void(0)">企业文化</a></span>
+                                    <ul>
+                                        <li><a href="#"></a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">产品应用</a></span>
+                                    <ul>
+                                        <li><a href="#">产品案例</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">AR模块</a></span>
+                                    <ul>
+                                        <li><router-link to="/user_login" >登录</router-link></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">人力资源</a></span>
+                                    <ul>
+                                        <li><a href="#">校园招聘</a></li>
+                                        <li><a href="#">社会招聘</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">客户服务</a></span>
+                                    <ul>
+                                        <li><a href="#">产品询价</a></li>
+                                        <li><a href="#">采购政策</a></li>
+                                        <li><a href="#">服务体系</a></li>
+                                        <li><a href="#">联系我们</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">关于我们</a></span>
+                                    <ul>
+                                        <li><a href="#">公司简介</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">个人中心</a></span>
+                                    <ul>
+                                        <li><a href="#">登录/注册</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{else if user}}
+    <div class="navigation_bar">
+        <div class="header">
+            <div class="nav-bar">
+                <div class="nav-bg">
+                    <div class="nav-top">
+                        <div class="nav-content">
+                            <ul class="nav-content-box">
+                                <li class="mobile">
+                                    <span><a href="#">首页</a></span>
+                                    <ul>
+                                        <li><a href="#"></a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="#">产品展示</a></span>
+                                    <ul>
+                                        <li><a href="#">品牌推广</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile ">
+                                    <span><a href="javascript:void(0)">企业文化</a></span>
+                                    <ul>
+                                        <li><a href="#"></a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">产品应用</a></span>
+                                    <ul>
+                                        <li><a href="#">产品案例</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">AR模块</a></span>
+                                    <ul>
+                                        <li><a href="/my_ar">我的AR项目</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">人力资源</a></span>
+                                    <ul>
+                                        <li><a href="#">校园招聘</a></li>
+                                        <li><a href="#">社会招聘</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">客户服务</a></span>
+                                    <ul>
+                                        <li><a href="#">产品询价</a></li>
+                                        <li><a href="#">采购政策</a></li>
+                                        <li><a href="#">服务体系</a></li>
+                                        <li><a href="#">联系我们</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">关于我们</a></span>
+                                    <ul>
+                                        <li><a href="#">公司简介</a></li>
+                                    </ul>
+                                </li>
+                                <li class="mobile">
+                                    <span><a href="javascript:void(0)">个人中心</a></span>
+                                    <ul>
+                                        <li><a href="#">修改密码</a></li>
+                                        <li><a href="/logout">退出</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+</template>
+<template id="carrousel_area"><!--顶部轮播图-->
+    {{if !admuser}}
+    <div class="carrousel_area">
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <!-- 指示器 -->
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic"  v-for="(item,i) in parent_top_carrousel_list" :key="item.id"v-if="i<(parent_top_carrousel_list.length)"  v-bind:data-slide-to=i v-bind:class="{'active':!i}" ></li>
+            </ol>
+            <!-- 轮播图片及说明文字 -->
+            <div class="carousel-inner" role="listbox">
+                <div class="item" v-for="(item,i) in parent_top_carrousel_list" :key="item.id"v-if="i<(parent_top_carrousel_list.length)" v-bind:class="{'item active':!i}">
+                    <a href="#" class="m_imgBox" v-bind:style=item.file_name></a>
+                </div>
+            </div>
+            <!-- 控制按钮：左右切换 -->
+            <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+        </div>
+    </div>
+    {{else if admuser}}
+     <div class="carrousel_area">
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <!-- 指示器 -->
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic"  v-for="(item,i) in parent_top_carrousel_list" :key="item.id"v-if="i<(parent_top_carrousel_list.length)"  v-bind:data-slide-to=i v-bind:class="{'active':!i}" ></li>
+                <button class="btn btn-primary" @click.prevent="administration">管理</button>
+            </ol>
+            <!-- 轮播图片及说明文字 -->
+            <div class="carousel-inner" role="listbox">
+                <div class="item" v-for="(item,i) in parent_top_carrousel_list" :key="item.id"v-if="i<(parent_top_carrousel_list.length)" v-bind:class="{'item active':!i}">
+                    <a href="#" class="m_imgBox" v-bind:style=item.file_name></a>
+                </div>
+            </div>
+            <!-- 控制按钮：左右切换 -->
+            <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+        </div>
+    </div>
+    {{/if}}
+</template>
+<template id="left_carrousel_area"><!--左下方轮播图-->
+    {{if !admuser}}
+    <div class="left_carrousel_area">
+        <div id="myCarousel" class="carousel slide">
+            <!-- 轮播（Carousel）指标 -->
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" v-for="(item,i) in parent_left_carrousel_list" :key="item.id"v-if="i<(parent_left_carrousel_list.length)"  v-bind:data-slide-to=i v-bind:class="{'active':!i}"></li>
+            </ol>   
+            <!-- 轮播（Carousel）项目 -->
+            <div class="carousel-inner">
+                <div class="item" v-for="(item,i) in parent_left_carrousel_list" :key="item.id"v-if="i<(parent_left_carrousel_list.length)" v-bind:class="{'item active':!i}">
+                    <a href="#" class="m_imgBox" v-bind:style=item.file_name></a>
+                    <div class="carousel-caption" v-text='item.title'></div>
+                </div>
+                <!-- 轮播（Carousel）导航 -->
+                <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div> 
+        </div>
+    </div>
+    {{else if admuser}}
+    <div class="left_carrousel_area">
+            <div id="myCarousel" class="carousel slide">
+                <!-- 轮播（Carousel）指标 -->
+                <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" v-for="(item,i) in parent_left_carrousel_list" :key="item.id"v-if="i<(parent_left_carrousel_list.length)"  v-bind:data-slide-to=i v-bind:class="{'active':!i}"></li>
+                    <button class="btn btn-primary btn-xs" @click.prevent="administration">管理</button>
+                </ol>  
+                <!-- 轮播（Carousel）项目 -->
+                <div class="carousel-inner">
+                    <div class="item" v-for="(item,i) in parent_left_carrousel_list" :key="item.id"v-if="i<(parent_left_carrousel_list.length)" v-bind:class="{'item active':!i}">
+                        <a href="#" class="m_imgBox" v-bind:style=item.file_name></a>
+                        <div class="carousel-caption" v-text='item.title'></div>
+                    </div>
+                    <!-- 轮播（Carousel）导航 -->
+                    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div> 
+            </div>
+        </div>
+    {{/if}}
+</template>
+<template id="news_area"><!--新闻区域-->
+    {{if !admuser}}
+    <div class="news_area">
+        <table class="table table-hover">
+            <thead class="news_area_thead">
+                <tr>
+                    <th><router-link class="news_center_title" to="/news_center" >新闻中心</router-link></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item,i) in parent_news_list" :key="item.id" v-if="i<7">
+                    <td>
+                        <a href="#" @click="goto(item.id)" v-text="'·'+' '+item.title"></a>
+                        <span class="news_time" v-text='item.time'></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {{else if admuser}}
+    <div class="news_area">
+            <table class="table table-hover">
+                <thead class="news_area_thead">
+                    <tr>
+                        <th>新闻中心&nbsp&nbsp<button class="btn btn-success" @click="add">添加</button></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item,i) in parent_news_list" :key="item.id" v-if="i<7">
+                        <td>
+                            <button class="btn btn-warning btn-sm" @click.prevent="change(item.id)">修改</button>
+                            <span>|</span>
+                            <button class="btn btn-danger btn-sm" @click.prevent="del(item.id)">删除</button>
+                            <a href="#"  @click="goto(item.id)" v-text="'·'+' '+item.title"></a>
+                            <span class="news_time" v-text='item.time'></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {{/if}}
+</template>
+<template id="some_button"><!--右下方按钮栏-->
+        <div class="some_button">
+                <p class="some_button_p">
+                    <button type="button" class="btn btn-primary btn-lg">在线咨询</button>
+                </p>
+                <p class="some_button_p">
+                    <button type="button" class="btn btn-primary btn-lg">项目设计</button>
+                </p>
+                <p class="some_button_p">
+                    <button type="button" class="btn btn-primary btn-lg">项目管理</button>
+                </p>
+                <p class="some_button_p">
+                    <button type="button" class="btn btn-primary btn-lg">项目总承包</button>
+                </p>
+                <p class="some_button_p">
+                    <button type="button" class="btn btn-primary btn-lg">服务缴费</button>
+                </p>
+            </div>
+</template>
+<template id="foot_area"><!--copyright-->
+        <div class="foot_area">copyright 2019-1-20</div>
+</template>
+<template id="administrator_login"><!--管理员登录界面-->
+    <div class="main">
+        <div class="header">
+            <h1>用户登录</h1>
+        </div>
+        <form>
+            <div class="form-group">
+                <label for="">用户名</label>
+                <input type="" v-model="username" class="form-control" placeholder="username" autofocus>
+            </div>
+            <div class="form-group">
+                <label for="">密码</label>
+                <a class="pull-right" href="">忘记密码？</a>
+                <input type="current-password" v-model="password" class="form-control" placeholder="Password">
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox">记住我
+                </label>
+            </div>
+            <button type="submit" class="btn btn-success btn-block" @click.prevent="login">登录</button>
+        </form>
+    </div>
+</template>
+<template id="index_news_add"><!--首页新闻添加界面-->
+        <div class="index_news_add">
+                <div class="header">
+                    <h1>新闻添加</h1>
+                </div>
+                <form>
+                    <div class="form-group">
+                        <label for="">新闻标题</label>
+                        <input type="" v-model="news_name" class="form-control" placeholder="News name" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="">时间</label>
+                        <input type="" v-model="time" class="form-control" placeholder="Time">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr1" class="add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing1" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im1" class="header add_writing">
+                        <img src="" id="m1"><input @change="photo1($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des1" class="form-control" placeholder="">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr2" class="add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing2" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im2" class="header add_writing">
+                        <img src="" id="m2"><input @change="photo2($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des2" class="form-control" placeholder="">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr3" class="add_writing add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing3" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im3" class="header add_writing">
+                        <img src="" id="m3"><input @change="photo3($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des3" class="form-control" placeholder="">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr4" class="add_writing">
+                            <label for="">段落</label>
+                            <textarea cols="50" rows="10" v-model="writing4" class="form-control" placeholder="">
+                            </textarea>
+                        </div>
+                        <div id="im4" class="header add_writing">
+                            <img src="" id="m4"><input @change="photo4($event)" type="file" class="kyc-passin">
+                            <input type="" v-model="add_des4" class="form-control" placeholder="">
+                        </div>
+                    <!--////////////////////////////-->
+                    <div id="wr5" class="add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing5" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im5" class="header add_writing">
+                        <img src="" id="m5"><input @change="photo5($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des5" class="form-control" placeholder="">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr6" class="add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing6" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im6" class="header add_writing">
+                        <img src="" id="m6"><input @change="photo6($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des6" class="form-control" placeholder="">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr7" class="add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing7" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im7" class="header add_writing">
+                        <img src="" id="m7"><input @change="photo7($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des7" class="form-control" placeholder="">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr8" class="add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing8" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im8" class="header add_writing">
+                        <img src="" id="m8"><input @change="photo8($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des8" class="form-control" placeholder="">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr9" class="add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing9" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im9" class="header add_writing">
+                        <img src="" id="m9"><input @change="photo9($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des9" class="form-control" placeholder="">
+                    </div>
+                    <!--////////////////////////////-->
+                    <div id="wr10" class="add_writing">
+                        <label for="">段落</label>
+                        <textarea cols="50" rows="10" v-model="writing10" class="form-control" placeholder="">
+                        </textarea>
+                    </div>
+                    <div id="im10" class="header add_writing">
+                        <img src="" id="m10"><input @change="photo10($event)" type="file" class="kyc-passin">
+                        <input type="" v-model="add_des10" class="form-control" placeholder="">
+                    </div>
+
+
+                    <button class="btn btn-warning btnx1" @click.prevent="add_writing">添加段落</button>
+                    <button class="btn btn-warning btnx2" @click.prevent="add_image">添加图片</button>
+                </form>
+                <button type="submit" class="btn btn-success btn-block" @click.prevent="add">上传</button>
+            </div>
+</template>
+<template id="index_news_change"><!--首页新闻更改界面-->
+    <div class="main">
+            <div class="header">
+                <h1>新闻中心修改</h1>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label for="">新闻标题</label>
+                    <input type="" v-model="news_name" class="form-control" placeholder="News name" autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="">时间</label>
+                    <input type="" v-model="time" class="form-control" placeholder="Time">
+                </div>
+                <button type="submit" class="btn btn-success btn-block" @click.prevent="change">修改</button>
+            </form>
+        </div>
+</template>
+<template id="top_carrousel_administration"><!--顶部轮播图管理界面-->
+    <div>
+        <h1 align="center">顶部轮播图管理</h1>
+    <table  class="table table-hover table-striped" style="width: 80% ;margin-left:10%">
+        <thead>
+          <tr>
+              <th>预览</th>
+              <th>Pictu_name</th>
+              <th>Id</th>
+              <th>Link</th>
+              <th>File_name</th>
+              <th>Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(item,i) in parent_top_carrousel_adm" :key="item.id">
+                <td v-bind:style=parent_top_carrousel_list[i].file_name></td>
+                <td v-text="item.picture_name"></td>
+                <td v-text="item.id"></td>
+                <td v-text="item.link"></td>
+                <td v-text="item.file_name"></td>
+                <td>
+                    <button class="btn btn-danger btn-sm" @click.prevent="del(item.id,item.file_name)">删除</button>
+                </td>
+            </tr>
+        </tbody> 
+    </table>
+    <div class="carousel_add1"><div class="carousel_add2">添加:</div><input @change="uploadPhoto($event)" type="file" class="kyc-passin"></div>
+</div>
+</template>
+<template id="left_carrousel_administration"><!--从轮播图管理界面-->
+    <div>
+        <h1 align="center">从轮播图管理</h1>
+    <table  class="table table-hover table-striped" style="width: 80% ;margin-left:10%">
+        <thead>
+          <tr>
+              <th>预览</th>
+              <th>Pictu_name</th>
+              <th>Title</th>
+              <th>Id</th>
+              <th>Link</th>
+              <th>File_name</th>
+              <th>Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(item,i) in parent_left_carrousel_adm" :key="item.id">
+                <td v-bind:style=parent_left_carrousel_list[i].file_name></td>
+                <td v-text="item.picture_name"></td>
+                <td v-text="item.title"></td>
+                <td v-text="item.id"></td>
+                <td v-text="item.link"></td>
+                <td v-text="item.file_name"></td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @click.prevent="change(item.id)">修改</button>
+                    <span>|</span>
+                    <button class="btn btn-danger btn-sm" @click.prevent="del(item.id,item.file_name)">删除</button>
+                </td>
+            </tr>
+        </tbody> 
+    </table>
+    <div class="carousel_add1"><div class="carousel_add2">添加:</div><input @change="uploadPhoto($event)" type="file" class="kyc-passin"></div>
+</div>
+</template>
+<template id="carousel_title_change"><!--首页从轮播图标题更改界面-->
+    <div class="main">
+            <div class="header">
+                <h1>轮播图标题修改</h1>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label for="">标题</label>
+                    <input type="" v-model="title" class="form-control" placeholder="Title" autofocus>
+                </div>
+                <button type="submit" class="btn btn-success btn-block" @click.prevent="change">修改</button>
+            </form>
+        </div>
+</template>
+<template id="user_login"><!--普通用户登录界面-->
+    <div class="main">
+        <div class="header">
+            <h1>用户登录</h1>
+        </div>
+        <form>
+            <div class="form-group">
+                <label for="">用户名</label>
+                <input type="" v-model="username" class="form-control" placeholder="username" autofocus>
+            </div>
+            <div class="form-group">
+                <label for="">密码</label>
+                <a class="pull-right" href="">忘记密码？</a>
+                <input type="current-password" v-model="password" class="form-control" placeholder="Password">
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox">记住我
+                </label>
+            </div>
+            <button type="submit" class="btn btn-success btn-block" @click.prevent="login">登录</button>
+        </form>
+    </div>
+</template>
+<template id="news_center"><!--新闻中心界面-->
+    <div class="news_area">
+        <table class="table table-hover">
+            <thead class="news_area_thead">
+                <tr>
+                    <th>新闻中心</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item,i) in parent_news_list" :key="item.id" v-if="i<parent_i_flag+7&&i>=parent_i_flag">
+                    <td>
+                        <a href="#"  @click="goto(item.id)" v-text="'·'+' '+item.title"></a>
+                        <span class="news_time" v-text='item.time'></span>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <div class="pull-right">
+                            <nav class="boot-nav" _v-6d0b978a="">
+                                <ul class="pagination boot-page" _v-6d0b978a="">
+                                    <li _v-6d0b978a="">
+                                        <a href="javascript:void(0)" aria-label="Previous" _v-6d0b978a="" @click.prevent="initial_page">
+                                            <span aria-hidden="true" _v-6d0b978a="">«</span>
+                                        </a>
+                                    </li>
+                                    <li _v-6d0b978a="">
+                                        <a href="javascript:void(0)" aria-label="Next" _v-6d0b978a="" @click.prevent="last_page">
+                                            <span aria-hidden="true" _v-6d0b978a="" >‹</span>
+                                        </a>
+                                    </li>
+                                    <li _v-6d0b978a="">
+                                        <a href="javascript:void(0)" aria-label="Next" _v-6d0b978a="" @click.prevent="next_page">
+                                            <span aria-hidden="true" _v-6d0b978a="" >›</span>
+                                        </a>
+                                    </li>
+                                    <li _v-6d0b978a="">
+                                        <a href="javascript:void(0)" aria-label="Next" _v-6d0b978a="" @click.prevent="final_page">
+                                            <span aria-hidden="true" _v-6d0b978a="">»</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</template>
+<template id="news_show">
+    <div class="news_show" v-html="parent_news" ></div>
+</template>
+    <!--///////////////////////////////////////////////////////////////////////////////////////////-->
+    <script>
+        /****************模块登录*****************/
+        var top_bar={
+            template:'#top_bar',
+            methods:{
+                show(){
+                    this.$emit(
+                        'func'
+                    )
+                }
+            }
+        }
+        var navigation_bar={
+            template:'#navigation_bar'
+        }
+        var carrousel_area={
+            template:'#carrousel_area',
+            props:['parent_top_carrousel_list'],
+            methods:{
+                administration(){
+                    this.$emit(
+                        'func'
+                    )
+                }
+            }
+        }
+        var left_carrousel_area={
+            template:'#left_carrousel_area',
+            props:['parent_left_carrousel_list'],
+            methods:{
+                administration(){
+                    this.$emit(
+                        'func'
+                    )
+                }
+            },
+        }
+        var news_area={
+            template:'#news_area',
+            props:['parent_news_list'],
+            methods:{
+                del(id){
+                    this.$emit(
+                        'func',id
+                    )
+                },
+                change(id){
+                    this.$emit(
+                        'func2',id
+                    )
+                },
+                add(){
+                    this.$emit(
+                        'func1'
+                    )
+                },
+                goto(id){
+                    this.$emit(
+                        'func3',id
+                    )
+                },
+            }
+        }
+        var some_button={
+            template:'#some_button'
+        }
+        var foot_area={
+            template:'#foot_area'
+        }
+        var administrator_login={
+            template:'#administrator_login',
+            data:function(){
+                return {
+                    username:'',
+                    password:'',
+                }
+            },
+            methods:{
+                login(){                   
+                    this.$emit(
+                        'func',this.username,this.password
+                    )
+                }
+            }
+        }
+        var index_news_add={
+            template:'#index_news_add',
+            props:['parent_all_news'],
+            data:function(){
+                return {
+                    order:'',
+                    news_name:'',
+                    time:'',
+                    all_news:'',
+                    add_writing_flag:0,
+                    add_image_flag:0,
+                    add_des1:'',
+                    add_des2:'',
+                    add_des3:'',
+                    add_des4:'',
+                    add_des5:'',
+                    add_des6:'',
+                    add_des7:'',
+                    add_des8:'',
+                    add_des9:'',
+                    add_des10:'',
+                    writing1:'',
+                    writing2:'',
+                    writing3:'',
+                    writing4:'',
+                    writing5:'',
+                    writing6:'',
+                    writing7:'',
+                    writing8:'',
+                    writing9:'',
+                    writing10:'',
+                }
+            },
+            methods:{
+                add(){     
+                    this.$emit(
+                        'func',this.order,this.news_name,this.time,this.writing1,this.writing2,this.writing3,this.writing4,this.writing5,this.writing6,this.writing7,this.writing8,this.writing9,this.writing10,
+                        this.add_des1,this.add_des2,this.add_des3,this.add_des4,this.add_des5,this.add_des6,this.add_des7,this.add_des8,this.add_des9,this.add_des10
+                    )
+                },
+                add_writing(){
+                    this.add_writing_flag++
+                    if(this.add_image_flag+1<this.add_writing_flag){
+                        this.add_image_flag++
+                    }
+                    this.order=this.order+'w'+this.add_writing_flag
+                    document.getElementById("wr"+this.add_writing_flag).style="display:block"
+                },
+                add_image()
+                {
+                    this.add_image_flag++
+                    if(this.add_writing_flag<this.add_image_flag){
+                        this.add_writing_flag++
+                    }
+                    this.order=this.order+'i'+this.add_writing_flag+'d'+this.add_writing_flag
+                    document.getElementById("im"+this.add_image_flag).style="display:block"
+                },
+                photo1(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size
+                    var filename = file.name
+                    vm.add_img1_name=filename
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m1").src=data
+                        vm.add_img1=imgcode
+                        }
+                },
+                photo2(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img2=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m2").src=data
+                        }
+                },
+                photo3(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img3=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m3").src=data
+                        }
+                },
+                photo4(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img4=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m4").src=data
+                        }
+                },
+                photo5(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img5=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m5").src=data
+                        }
+                },
+                photo6(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img6=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m6").src=data
+                        }
+                },
+                photo7(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img7=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m7").src=data
+                        }
+                },
+                photo8(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img8=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m8").src=data
+                        }
+                },
+                photo9(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img9=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m9").src=data
+                        }
+                },
+                photo10(e){
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result
+                        vm.add_img10=imgcode
+                        var data = 'data:image/png;'+imgcode
+                        document.getElementById("m10").src=data
+                        }
+                },
+            }
+        }
+        var index_news_change={
+            template:'#index_news_change',
+            data:function(){
+                return {
+                    news_name:'',
+                    time:'',
+                }
+            },
+            methods:{
+                change(){                   
+                    this.$emit(
+                        'func',this.news_name,this.time
+                    )
+                }
+            }
+
+        }
+        var top_carrousel_administration={
+            template:'#top_carrousel_administration',
+            props:['parent_top_carrousel_adm','parent_top_carrousel_list'],
+            methods:{
+                uploadPhoto($event){
+                    this.$emit(
+                        'func',$event
+                    )
+                },
+                del(id,file_name){
+                    this.$emit(
+                        'func1',id,file_name
+                    )
+                }
+            }
+        }
+        var left_carrousel_administration={
+            template:'#left_carrousel_administration',
+            props:['parent_left_carrousel_adm','parent_left_carrousel_list'],
+            methods:{
+                uploadPhoto($event){
+                    this.$emit(
+                        'func',$event
+                    )
+                },
+                del(id,file_name){
+                    this.$emit(
+                        'func1',id,file_name
+                    )
+                },
+                change(id){
+                    this.$emit(
+                        'func2',id
+                    )
+                }
+            }
+        }
+        var carousel_title_change={
+            template:'#carousel_title_change',
+            data:function(){
+                return {
+                    title:'',
+                }
+            },
+            methods:{
+                change(){                   
+                    this.$emit(
+                        'func',this.title
+                    )
+                }
+            }
+        }
+        var user_login={
+            template:'#user_login',
+            data:function(){
+                return {
+                    username:'',
+                    password:'',
+                }
+            },
+            methods:{
+                login(){                   
+                    this.$emit(
+                        'func',this.username,this.password
+                    )
+                }
+            }
+        }
+        var news_center={
+            template:'#news_center',
+            props:['parent_news_list','parent_i_flag'],
+            methods:{
+                del(id){
+                    this.$emit(
+                        'func',id
+                    )
+                },
+                change(id){
+                    this.$emit(
+                        'func2',id
+                    )
+                },
+                add(){
+                    this.$emit(
+                        'func1'
+                    )
+                },
+                next_page(){
+                    this.$emit(
+                        'func3'
+                    )
+                },
+                last_page(){
+                    this.$emit(
+                        'func4'
+                    )
+                },
+                initial_page(){
+                    this.$emit(
+                        'func5'
+                    )
+                },
+                final_page(){
+                    this.$emit(
+                        'func6'
+                    )
+                },
+                goto(id){
+                    this.$emit(
+                        'func7',id
+                    )
+                },
+            }
+        }
+        var news_show={
+            template:'#news_show',
+            props:['parent_news'],
+        }
+        /*****************router规则****************/
+        var routerObj = new VueRouter({
+            routes:[
+                {path:'/administrator_login',components:{
+                    top_bar,
+                    administrator_login,
+                }},
+                {path:'/user_login',components:{
+                    top_bar,
+                    user_login,
+                }},
+                {path:'/',components:{
+                    top_bar,
+                    navigation_bar,
+                    carrousel_area,
+                    left_carrousel_area,
+                    news_area,
+                    some_button,
+                    foot_area,
+                }},
+                {path:'/index_news_add',components:{
+                    top_bar,
+                    index_news_add,
+                }},
+                {path:'/index_news_change',components:{
+                    top_bar,
+                    index_news_change,
+                }},
+                {path:'/top_carrousel_administration',components:{
+                    'top_carrousel_adm':top_carrousel_administration,
+                    top_bar,
+                }},
+                {path:'/left_carrousel_administration',components:{
+                    'left_carrousel_adm':left_carrousel_administration,
+                    top_bar,
+                }},
+                {path:'/carousel_title_change',components:{
+                    top_bar,
+                    carousel_title_change,
+                }},
+                {path:'/news_center',components:{
+                    top_bar,
+                    navigation_bar,
+                    carrousel_area,
+                    left_carrousel_area,
+                    news_center,
+                    foot_area,
+                }},
+                {path:'/news_show',components:{
+                    top_bar,
+                    navigation_bar,
+                    carrousel_area,
+                    left_carrousel_area,
+                    news_show,
+                }}
+
+            ]
+        })
+        /**********************************************/
+        /*******************Vue实例********************/
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                top_carrousel_adm:[],
+                news_list:[],
+                top_carrousel_list:[],
+                left_carrousel_list:[],
+                left_carrousel_adm:[],
+                email:'',
+                keyword:'',
+                news_change_id:'',
+                carousels_change_id:'',
+                i_flag:0,
+                i_max:'',
+                news_title:'',
+                news_time:'',
+                news_writing:[],
+                news_image:[],
+                news_describe:[],
+                order:'',
+                news:[],
+                news_html:'',
+                all_news:'',
+                add_writing_flag:0,
+                add_image_flag:0,
+                add_img:[],
+                add_img1:'',add_img1_name:'',
+                add_img2:'',add_img2_name:'',
+                add_img3:'',add_img3_name:'',
+                add_img4:'',add_img4_name:'',
+                add_img5:'',add_img5_name:'',
+                add_img6:'',add_img6_name:'',
+                add_img7:'',add_img7_name:'',
+                add_img8:'',add_img8_name:'',
+                add_img9:'',add_img9_name:'',
+                add_img10:'',add_img10_name:'',
+                
+            },
+            created(){
+                this.get_news_list()
+                this.get_top_carrousel_list()
+                this.get_left_carrousel_list()
+                this.get_top_carrousel_adm()
+                this.get_left_carrousel_adm()
+            },
+            methods:{
+                user_login(username,password){
+                    this.$http.post('/user_login',{
+                        username,
+                        password,
+                    },{emulateJSON:true}).then(result => {
+                        if (result.body.err_code === 0) {
+                            window.location.href = '/'
+                        }else{
+                            alert('用户名或密码错误')
+                        }
+                    })
+                },
+                top_carousels_del(id,file_name){
+                    this.$http.post('/top_carousels_del',{
+                        id,file_name
+                    },{emulateJSON:true}).then(result => {
+                        if (result.body.err_code === 0) {
+                            alert('删除成功')
+                            this.get_top_carrousel_adm()
+                            this.get_top_carrousel_list()
+                        }else{
+                            alert('删除失败')
+                        }
+                    })
+                },
+                left_carousels_del(id,file_name){
+                    this.$http.post('/left_carousels_del',{
+                        id,file_name
+                    },{emulateJSON:true}).then(result => {
+                        if (result.body.err_code === 0) {
+                            alert('删除成功')
+                            this.get_left_carrousel_adm()
+                            this.get_left_carrousel_list()
+                        }else{
+                            alert('删除失败')
+                        }
+                    })
+                },
+                left_carrousel_administration(){
+                    window.location.href = '#/left_carrousel_administration'
+                },
+                top_carrousel_administration(){
+                    window.location.href = '#/top_carrousel_administration'
+                },
+                news_change(news_name,time){
+                    this.$http.post('/news_change',{
+                        news_name,
+                        time,
+                        'id':this.news_change_id,
+                    },{emulateJSON:true}).then(result => {
+                        this.news_change_id=''
+                        if (result.body.err_code === 0) {
+                            alert('修改成功')
+                            window.location.href = '/'
+                        }else{
+                            alert('修改失败')
+                        }
+                    })
+                },
+                index_news_change(id){
+                    this.news_change_id=id
+                    window.location.href = '#/index_news_change'
+                },
+                news_add(order,name,time,w1,w2,w3,w4,w5,w6,w7,w8,w9,w10,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10){
+                    this.$http.post('/news_add',{
+                        order,
+                        name,
+                        time,
+                        w1,w2,w3,w4,w5,w6,w7,w8,w9,w10,
+                        d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,
+                        i1:this.add_img1,i1n:this.add_img1_name,
+                        i2:this.add_img2,i2n:this.add_img2_name,
+                        i3:this.add_img3,i3n:this.add_img3_name,
+                        i4:this.add_img4,i4n:this.add_img4_name,
+                        i5:this.add_img5,i5n:this.add_img5_name,
+                        i6:this.add_img6,i6n:this.add_img6_name,
+                        i7:this.add_img7,i7n:this.add_img7_name,
+                        i8:this.add_img8,i8n:this.add_img8_name,
+                        i9:this.add_img9,i9n:this.add_img9_name,
+                        i10:this.add_img10,i10n:this.add_img10_name,
+                    },{emulateJSON:true}).then(result => {
+                        if (result.body.err_code === 0) {
+                            alert('添加成功')
+                            window.location.href = '/'
+                        }else{
+                            alert('添加失败')
+                        }
+                    })
+                },
+                index_news_add(){
+                    this.add_img1_name=this.add_img2_name=this.add_img3_name=this.add_img4_name=this.add_img5_name=this.add_img6_name=this.add_img7_name=this.add_img8_name=this.add_img9_name=this.add_img10_name=this.add_img1=this.add_img2=this.add_img3=this.add_img4=this.add_img5=this.add_img6=this.add_img7=this.add_img8=this.add_img9=this.add_img10=''
+                    window.location.href = '#/index_news_add'
+                },
+                index_news_del(id){
+                    this.$http.post('/index_news_del',{
+                        id,
+                    },{emulateJSON:true}).then(result => {
+                        if (result.body.err_code === 0) {
+                            alert('删除成功')
+                            this.get_news_list()
+                        }else{
+                            alert('删除失败')
+                        }
+                    })
+                },
+                administrator_login(username,password){
+                    this.$http.post('/administrator_login',{
+                        username,
+                        password,
+                    },{emulateJSON:true}).then(result => {
+                        if (result.body.err_code === 0) {
+                            window.location.href = '/'
+                        }else{
+                            alert('用户名或密码错误')
+                        }
+                    })
+                },
+                get_news_list(){
+                    this.$http.get('/get_news_list').then(result => {
+                        if(result.body.err_code == 0){
+                            var result = result.body.message
+                            
+                            this.news_list=result
+                            this.i_max=result.length
+                        }else{
+                            alert('网络错误')
+                        }
+                    })
+                },
+                get_top_carrousel_list(){
+                    this.$http.get('/get_top_carrousel_list').then(result => {
+                        if(result.body.err_code == 0){
+                            var result = result.body.message
+                            this.top_carrousel_list=result
+                            for(i=0;i<result.length;i++){
+                                this.top_carrousel_list[i].file_name="background:url(../public/img/top_carousels/"+this.top_carrousel_list[i].file_name+");background-repeat: no-repeat;background-size: 100% 100%;-moz-background-size: 100% 100%;"
+                            }
+                        }else{
+                            alert('网络错误')
+                        }
+                    })
+                },
+                get_top_carrousel_adm(){
+                    this.$http.get('/get_top_carrousel_list').then(result => {
+                        if(result.body.err_code == 0){
+                            var result = result.body.message
+                            this.top_carrousel_adm=result
+                        }else{
+                            alert('网络错误')
+                        }
+                    })
+                },
+                get_left_carrousel_list(){
+                    this.$http.get('/get_left_carrousel_list').then(result => {
+                        if(result.body.err_code == 0){
+                            var result = result.body.message
+                            this.left_carrousel_list=result
+                            for(i=0;i<result.length;i++){
+                                this.left_carrousel_list[i].file_name="background:url(../public/img/left_carousels/"+this.left_carrousel_list[i].file_name+");background-repeat: no-repeat;background-size: 100% 100%;-moz-background-size: 100% 100%;"
+                            }
+                        }else{
+                            alert('网络错误')
+                        }
+                    })
+                },
+                get_left_carrousel_adm(){
+                    this.$http.get('/get_left_carrousel_list').then(result => {
+                        if(result.body.err_code == 0){
+                            var result = result.body.message
+                            this.left_carrousel_adm=result                          
+                        }else{
+                            alert('网络错误')
+                        }
+                    })
+                },
+                show_main_area(){
+                    this.flag=!this.flag
+                    if(this.flag==false){
+                        this.$refs.main_area.style.display='none';
+                    }else{
+                        this.$refs.main_area.style.display='flex';
+                    }
+                },
+                top_carousels_add(e) {
+                    // 利用fileReader对象获取file
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result;
+                        vm.$http.post('/top_carousels_add',{img:imgcode,filename}).then(result => {
+                             if (result.body.err_code === 0) {
+                                 vm.get_top_carrousel_list()
+                                 vm.get_top_carrousel_adm()
+                                 alert('添加成功')
+                            }else{
+                                alert('添加失败！')
+                            }
+                          })
+                        }
+                    },
+                left_carousels_add(e){
+                    // 利用fileReader对象获取file
+                    var file = e.target.files[0];
+                    var filesize = file.size;
+                    var filename = file.name;
+                    // 2,621,440   2M
+                    if (filesize > 2101440*5) {
+                        // 图片大于10MB
+                        alert('请上传小于10M的图片')
+                    }
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function (e) {
+                        // 读取到的图片base64 数据编码 将此编码字符串传给后台即可
+                        var imgcode = e.target.result;
+                        vm.$http.post('/left_carousels_add',{img:imgcode,filename}).then(result => {
+                            if (result.body.err_code === 0) {
+                                vm.get_left_carrousel_adm()
+                                vm.get_left_carrousel_list()
+                                alert('添加成功')
+                            }else{
+                                alert('添加失败！')
+                            }
+                        })
+                    }
+                },
+                left_carousels_change(id){
+                    this.carousels_change_id=id
+                    window.location.href = '#/carousel_title_change'
+                },
+                carrousel_title_change(title){
+                        this.$http.post('/carrousel_title_change',{
+                        title,
+                        'id':this.carousels_change_id
+                    },{emulateJSON:true}).then(result => {
+                        this.carousels_change_id=''
+                        if (result.body.err_code === 0) {
+                            alert('修改成功')
+                            this.get_left_carrousel_adm()
+                            this.get_left_carrousel_list()
+                            window.location.href = '#/left_carrousel_administration'
+                        }else{
+                            alert('修改失败')
+                        }
+                    })
+                },
+                next_page(){
+                    if(this.i_flag+7<=this.i_max){
+                        this.i_flag=this.i_flag+7
+                    }else{
+                        alert('已经到底啦')
+                    }
+                },
+                last_page(){
+                    if(this.i_flag>0){
+                    this.i_flag=this.i_flag-7
+                    }else{
+                        alert('已经到头啦')
+                    }
+                },
+                initial_page(){
+                    if(this.i_flag>0){
+                    this.i_flag=0
+                    }else{
+                        alert('已经到头啦')
+                    }
+                },
+                final_page(){
+                    var flag=this.i_flag
+                    if(this.i_flag+7<=this.i_max){
+                        for(flag;flag<this.i_max-7;flag=flag+7){}
+                        this.i_flag=flag
+                    }
+                    else{
+                        alert('已经到底啦')
+                    }
+                },
+                go_to_news(id){
+                    this.news=[]
+                    this.news_html=''
+                    window.location.href = '#/news_show'
+                    this.$http.post('/news_show',{
+                        id
+                    },{emulateJSON:true}).then(result => {
+                        if(result.body.err_code == 0){
+                            this.news_title='<div class="news_tit">'+result.body.title+'</div>'
+                            this.news_time='<div class="news_t">'+result.body.time+'</div>'+'<hr class="news_hr;">'
+                            this.news_writing=result.body.writing
+                            this.news_image=result.body.image
+                            this.news_describe=result.body.describe
+                            this.order=result.body.order
+                            var length=this.order.length
+                            for(i=0,j=0;i<length;i=i+2,j++){
+                                var msg1 = this.order[i]
+                                var msg2 = this.order[i+1]
+                                if(msg1 == 'w'){
+                                    this.news[j]='<div class="news_writing">'+'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'+this.news_writing[msg2-1]+'</div>'                             
+                                }else if(msg1 == 'i'){
+                                    var url =this.news_image[msg2-1]
+                                    this.news[j]='<div class="news_img"><img src="'+url+'"></img></div>'
+                                }else if(msg1 == 'd'){
+                                    this.news[j]='<div class="news_d">'+'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'+this.news_describe[msg2-1]+'</div>'
+                                }
+                            }
+                            for(i=0;i<this.news.length;i++){
+                                this.news_html=this.news_html+this.news[i]
+                            }     
+                            this.news_html=this.news_title+this.news_time+this.news_html
+                        }else{
+                            alert('网络错误')
+                        }
+                    })
+                },
+            },
+ 
+
+            components:{
+                top_bar,
+                navigation_bar,
+                carrousel_area,
+                left_carrousel_area,
+                news_area,
+                some_button,
+                foot_area,
+                administrator_login,
+                index_news_add,
+                top_carrousel_administration,
+                left_carrousel_administration,
+                carousel_title_change,
+                user_login,
+                top_bar,
+                news_center,
+                news_show,
+            },
+            router:routerObj
+        })
+    </script>
+</body>
+</html>

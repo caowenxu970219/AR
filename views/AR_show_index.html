@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | Industrial Robt</title>
+    <link rel="shortcut icon" href="/public/webgl/TemplateData/favicon.ico">
+    <link rel="stylesheet" href="/public/webgl/TemplateData/style.css">
+    <script src="/public/webgl/TemplateData/UnityProgress.js"></script>
+    <script src="/public/webgl/Build/UnityLoader.js"></script>
+    <script>
+      var gameInstance = UnityLoader.instantiate("gameContainer", "/public/webgl/Build/webgl.json", {onProgress: UnityProgress});
+    </script>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/public/css/login.css">
+    <script src="../public/lib/vue.js"></script>
+    <script src="../public/lib/vue-resource-1.3.4.js"></script>
+    <script src="/node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>  
+    <script src="../public/lib/vue-router-3.0.1.js"></script>
+    <link href="../public/css/danghanglan.css" rel="stylesheet" type="text/css" /> 
+    <link rel="stylesheet" href="../public/css/AR_index.css">
+  </head>
+  <body>
+      {{if !admuser&&!user}}
+      <div class="top_bar_1">
+          <a class="navbar-brand" href="/">
+              <img width="75%" src="/public/img/logo.png" alt="">
+          </a>
+          <div class="top_bar_2">
+              <router-link  @click="show" class="top_bar_2_a" to="/administrator_login" >管理员登录</router-link>
+          </div>
+      </div>
+      {{else if admuser}}
+      <div class="top_bar_1">
+          <a class="navbar-brand" href="/">
+              <img width="75%" src="/public/img/logo.png" alt="">
+          </a>
+          <div class="top_bar_2">
+              <div class="top_bar_2_a">
+                  <div class="dropdown">
+                      您好，管理员 <a data-toggle="dropdown" href="#">{{admuser[0].user_name}}</a>
+                      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                          <li><a href="/logout">退出</a></li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      </div>
+      {{else if user}}
+      <div class="top_bar_1">
+          <a class="navbar-brand" href="/">
+              <img width="75%" src="/public/img/logo.png" alt="">
+          </a>
+          <div class="top_bar_2">
+              <div class="top_bar_2_a">
+                  <div class="dropdown">
+                      您好, <a data-toggle="dropdown" href="#">{{user[0].username}}</a>
+                      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                          <li><a href="/logout">退出</a></li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      </div>
+      {{/if}}
+    <div class="webgl-content">
+      <div id="gameContainer" style="width: 960px; height: 600px"></div>
+      <div class="footer">
+        <div class="webgl-logo"></div>
+        <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
+        <div class="title">Industrial Robt</div>
+      </div>
+    </div>
+  </body>
+</html>
